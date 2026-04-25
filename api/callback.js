@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.redirect('/?error=access_denied');
   }
 
-  const redirectUri = 'https://musicruinedmylife.vercel.app/api/callback';
+  const redirectUri = 'https://musicruinedmylife.vercel.app/callback';
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
