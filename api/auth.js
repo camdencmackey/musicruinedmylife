@@ -1,6 +1,6 @@
 export default function handler(req, res) {
   const scopes = 'user-top-read user-read-private';
-  const redirectUri = 'https://musicruinedmylife.vercel.app/callback';
+  const redirectUri = 'https://musicruinedmylife.vercel.app/api/callback';
 
   const params = new URLSearchParams({
     response_type: 'code',
