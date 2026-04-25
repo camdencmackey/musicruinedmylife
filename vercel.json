@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/callback", "destination": "/api/callback" },
+    { "source": "/result", "destination": "/public/result.html" },
+    { "source": "/", "destination": "/public/index.html" }
+  ]
+}
