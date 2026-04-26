@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Music Ruined My Life</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @font-face {
   font-family: 'TerminalGrotesque';
@@ -11,62 +12,209 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body {
-  height: 100%;
+  min-height: 100%;
   background: #fff;
   color: #111;
   font-family: 'TerminalGrotesque', monospace;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 48px 24px;
 }
-.wrap {
-  text-align: center;
+.container { width: 100%; max-width: 560px; }
+
+/* LOADING */
+#loading {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: 24px;
 }
-h1 {
+.loading-label {
   font-family: 'TerminalGrotesque', monospace;
-  font-size: clamp(48px, 10vw, 96px);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  line-height: 0.9;
+  font-size: 13px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #111;
 }
-.btn {
-  display: inline-block;
+.retro-bar { display: flex; gap: 4px; }
+.segment {
+  width: 16px;
+  height: 32px;
+  background: #e0ddd8;
+  transition: background 0.08s;
+}
+.segment.on { background: #111; }
+
+/* RESULT */
+#result { display: none; width: 100%; }
+
+.card {
+  background: #fff;
+  padding: 48px 0;
+}
+
+.block { margin-bottom: 40px; }
+.block:last-of-type { margin-bottom: 0; }
+
+.name {
+  font-family: 'TerminalGrotesque', monospace;
+  font-size: clamp(48px, 10vw, 88px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  color: #111;
+  word-break: break-word;
+  margin-bottom: 4px;
+}
+
+.tag {
+  font-family: 'TerminalGrotesque', monospace;
+  font-size: clamp(22px, 4.5vw, 40px);
+  line-height: 1;
+  text-transform: uppercase;
+  color: #111;
+}
+
+/* ACTIONS */
+.actions {
+  margin-top: 48px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.btn-save {
+  font-family: 'TerminalGrotesque', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   background: #111;
   color: #fff;
-  font-family: 'TerminalGrotesque', monospace;
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 16px 40px;
-  text-decoration: none;
+  border: none;
+  padding: 14px 32px;
+  cursor: pointer;
   transition: opacity 0.2s;
 }
-.btn:hover { opacity: 0.65; }
-.error {
+.btn-save:hover { opacity: 0.7; }
+.btn-again {
+  font-family: 'TerminalGrotesque', monospace;
   font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: #aaa;
-  margin-top: -32px;
+  text-decoration: none;
+  transition: color 0.2s;
 }
+.btn-again:hover { color: #111; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Music<br>Ruined<br>My Life</h1>
-  <a class="btn" href="/api/auth">Connect Spotify</a>
-  <div id="error-msg" class="error"></div>
+<div class="container">
+
+  <div id="loading">
+    <div class="loading-label" id="loading-label">Analyzing — 0%</div>
+    <div class="retro-bar" id="retro-bar"></div>
+  </div>
+
+  <div id="result">
+    <div class="card" id="card">
+      <div class="block">
+        <div class="name" id="top-artist"></div>
+        <div class="tag">ruined your life</div>
+      </div>
+      <div class="block">
+        <div class="name" id="top-track"></div>
+        <div class="tag">ruined your life</div>
+      </div>
+      <div class="block">
+        <div class="name" id="top-genre"></div>
+        <div class="tag">ruined your life</div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-save" onclick="saveImage()">Save Image</button>
+      <a class="btn-again" href="/">Start Over</a>
+    </div>
+  </div>
+
 </div>
 <script>
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('error')) {
-    document.getElementById('error-msg').textContent = 'Something went wrong. Try again.';
+  const SEGMENTS = 20;
+
+  function buildBar() {
+    const bar = document.getElementById('retro-bar');
+    for (let i = 0; i < SEGMENTS; i++) {
+      const s = document.createElement('div');
+      s.className = 'segment';
+      s.id = 'seg-' + i;
+      bar.appendChild(s);
+    }
   }
+
+  function updateBar(pct) {
+    const filled = Math.floor((pct / 100) * SEGMENTS);
+    for (let i = 0; i < SEGMENTS; i++) {
+      document.getElementById('seg-' + i).classList.toggle('on', i < filled);
+    }
+    document.getElementById('loading-label').textContent = 'Analyzing — ' + Math.floor(pct) + '%';
+  }
+
+  function animateLoad(cb) {
+    let w = 0;
+    const iv = setInterval(() => {
+      const speed = w < 80 ? 1.8 : w < 93 ? 0.6 : 0.15;
+      w = Math.min(w + speed, 95);
+      updateBar(w);
+      if (w >= 95) {
+        clearInterval(iv);
+        setTimeout(() => { updateBar(100); setTimeout(cb, 400); }, 700);
+      }
+    }, 30);
+  }
+
+  function getParams() {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('data');
+    if (!raw) return null;
+    try { return JSON.parse(decodeURIComponent(raw)); }
+    catch { return null; }
+  }
+
+  function render(data) {
+    const artist = data.artists[0]?.name || 'Music';
+    const track = data.tracks[0]?.name || 'A Song';
+    const genre = data.artists.flatMap(a => a.genres)[0] || 'Your Taste';
+    const genreFormatted = genre.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    document.getElementById('top-artist').textContent = artist;
+    document.getElementById('top-track').textContent = track;
+    document.getElementById('top-genre').textContent = genreFormatted;
+  }
+
+  function saveImage() {
+    const card = document.getElementById('card');
+    html2canvas(card, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'musicruinedmylife.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  buildBar();
+
+  window.onload = () => {
+    const data = getParams();
+    if (!data) { window.location.href = '/'; return; }
+    animateLoad(() => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      render(data);
+    });
+  };
 </script>
 </body>
 </html>
