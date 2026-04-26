@@ -14,8 +14,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization':
-        'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+      'Authorization': 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
     },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
@@ -32,30 +31,31 @@ export default async function handler(req, res) {
 
   const token = tokenData.access_token;
 
-  // Fetch Spotify data
-  const [artistsRes, tracksRes] = await Promise.all([
-    fetch('https://api.spotify.com/v1/me/top/artists?limit=1&time_range=short_term', {
+  // Fetch top artists, tracks, and user profile in parallel
+  const [artistsRes, tracksRes, profileRes] = await Promise.all([
+    fetch('https://api.spotify.com/v1/me/top/artists?limit=5&time_range=short_term', {
       headers: { Authorization: `Bearer ${token}` }
     }),
-    fetch('https://api.spotify.com/v1/me/top/tracks?limit=1&time_range=short_term', {
+    fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
+      headers: { Authorization: `Bearer ${token}` }
+    }),
+    fetch('https://api.spotify.com/v1/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
   ]);
 
-  const [artists, tracks] = await Promise.all([
+  const [artists, tracks, profile] = await Promise.all([
     artistsRes.json(),
-    tracksRes.json()
+    tracksRes.json(),
+    profileRes.json()
   ]);
 
-  const topArtist = artists.items?.[0];
-  const topTrack = tracks.items?.[0];
-
-  // Clean payload for frontend
+  // Encode data and redirect to result page
   const data = encodeURIComponent(JSON.stringify({
-    artist: topArtist?.name || "Unknown Artist",
-    song: topTrack?.name || "Unknown Song",
-    album: topTrack?.album?.name || "Unknown Album"
+    artists: artists.items?.map(a => ({ name: a.name, genres: a.genres })) || [],
+    tracks: tracks.items?.map(t => ({ name: t.name, artist: t.artists[0]?.name })) || [],
+    name: profile.display_name || 'You'
   }));
 
-  res.redirect(`/result.html?data=${data}`);
+  res.redirect(`/result?data=${data}`);
 }
