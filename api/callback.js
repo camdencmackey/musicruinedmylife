@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.redirect('/?error=access_denied');
   }
 
-  const redirectUri = 'https://musicruinedmylife.vercel.app/api/callback';
+  const redirectUri = 'https://musicruinedmylife.vercel.app/callback';
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -33,10 +33,10 @@ export default async function handler(req, res) {
 
   // Fetch top artists, tracks, and user profile in parallel
   const [artistsRes, tracksRes, profileRes] = await Promise.all([
-    fetch('https://api.spotify.com/v1/me/top/artists?limit=5&time_range=short_term', {
+    fetch('https://api.spotify.com/v1/me/top/artists?limit=5&time_range=medium_term', {
       headers: { Authorization: `Bearer ${token}` }
     }),
-    fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
+    fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=medium_term', {
       headers: { Authorization: `Bearer ${token}` }
     }),
     fetch('https://api.spotify.com/v1/me', {
