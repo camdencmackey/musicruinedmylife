@@ -1,441 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Damage Report</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Music Ruined Your Life</title>
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    min-height: 100%;
-    background: #f9f8f5;
-    color: #111;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0b0b0b;
+    color: white;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: center;
-    padding: 48px 24px;
+    min-height: 100vh;
   }
 
-  .container { width: 100%; max-width: 480px; }
-
-  /* RECEIPT */
-  .receipt {
-    background: #fff;
-    border: 1px solid #e0ddd8;
-    padding: 40px 36px;
-    position: relative;
-  }
-
-  /* Torn edge top */
-  .receipt::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: repeating-linear-gradient(
-      90deg,
-      #f9f8f5 0px, #f9f8f5 8px,
-      transparent 8px, transparent 16px
-    );
-  }
-  .receipt::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: repeating-linear-gradient(
-      90deg,
-      #f9f8f5 0px, #f9f8f5 8px,
-      transparent 8px, transparent 16px
-    );
-  }
-
-  .receipt-header {
-    text-align: center;
-    border-bottom: 1px dashed #ccc;
-    padding-bottom: 24px;
-    margin-bottom: 24px;
-  }
-  .receipt-store {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 8px;
-  }
-  .receipt-title {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin-bottom: 8px;
-  }
-  .receipt-sub {
-    font-size: 12px;
-    color: #888;
-    letter-spacing: 0.06em;
-  }
-
-  .section-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 12px;
-    margin-top: 24px;
-  }
-
-  .item-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0ede8;
-    font-size: 13px;
-    gap: 16px;
-  }
-  .item-name { flex: 1; }
-  .item-damage {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: #888;
-    white-space: nowrap;
-  }
-
-  .total-section {
-    border-top: 2px solid #111;
-    margin-top: 24px;
-    padding-top: 16px;
-  }
-  .total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
-    font-size: 13px;
-  }
-  .total-row.big {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    margin-top: 12px;
-  }
-  .total-label { }
-  .total-val { font-weight: 600; }
-
-  .verdict {
-    text-align: center;
-    border-top: 1px dashed #ccc;
-    margin-top: 28px;
-    padding-top: 24px;
-  }
-  .verdict-stamp {
-    display: inline-block;
-    border: 2.5px solid #111;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    transform: rotate(-2deg);
-    margin-bottom: 16px;
-  }
-  .verdict-text {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #555;
-  }
-
-  .receipt-footer {
-    text-align: center;
-    margin-top: 28px;
-    border-top: 1px dashed #ccc;
-    padding-top: 20px;
-  }
-  .barcode {
-    font-family: 'Courier New', monospace;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    color: #bbb;
-    margin-bottom: 8px;
-  }
-  .footer-small {
-    font-size: 10px;
-    color: #bbb;
-    letter-spacing: 0.08em;
-  }
-
-  /* Outside receipt */
-  .actions {
-    display: flex;
-    gap: 16px;
-    margin-top: 32px;
-    justify-content: center;
-  }
-  .btn {
-    background: #111;
-    color: #f9f8f5;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 14px 28px;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    transition: opacity 0.2s;
-    display: inline-block;
-  }
-  .btn:hover { opacity: 0.7; }
-  .btn-ghost {
-    background: none;
-    border: 1px solid #ccc;
-    color: #888;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 14px 28px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s;
-    display: inline-block;
-  }
-  .btn-ghost:hover { border-color: #111; color: #111; }
-
-  #loading {
-    text-align: center;
-  }
-  #loading p {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #888;
-    margin-bottom: 20px;
-  }
-  .load-bar-track {
+  .container {
     width: 100%;
-    height: 2px;
-    background: #e0ddd8;
+    max-width: 600px;
+    padding: 40px 20px;
+    text-align: center;
   }
-  .load-bar-fill {
-    height: 100%;
-    background: #111;
-    width: 0%;
-    transition: width 0.3s ease;
+
+  h1 {
+    font-size: 34px;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .sub {
+    color: #888;
+    margin-bottom: 40px;
+    font-size: 14px;
+  }
+
+  .grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  .card {
+    background: #151515;
+    padding: 18px;
+    border-radius: 14px;
+    text-align: left;
+  }
+
+  .label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .value {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .tag {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #ff4d4d;
+    font-weight: 600;
+  }
+
+  .btn {
+    display: inline-block;
+    margin-top: 40px;
+    padding: 12px 20px;
+    border: 1px solid #333;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+  }
+
+  .btn:hover {
+    border-color: white;
+  }
+
+  /* Loading */
+  #loading {
+    color: #888;
+    font-size: 14px;
   }
 </style>
 </head>
+
 <body>
+
 <div class="container">
 
-  <div id="loading">
-    <p>Assessing damage</p>
-    <div class="load-bar-track"><div class="load-bar-fill" id="load-fill"></div></div>
-  </div>
+  <div id="loading">Analyzing your taste...</div>
 
-  <div id="receipt" style="display:none">
-    <div class="receipt" id="receipt-inner">
-      <div class="receipt-header">
-        <div class="receipt-store">musicruinedmylife.vercel.app</div>
-        <div class="receipt-title" id="receipt-title">MUSIC RUINED<br>YOUR LIFE</div>
-        <div class="receipt-sub" id="receipt-date"></div>
+  <div id="content" style="display:none;">
+    <h1>Your Music Diagnosis</h1>
+    <div class="sub">based on your Spotify activity</div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="label">Top Artist</div>
+        <div class="value" id="artist">—</div>
+        <div class="tag">ruined your life</div>
       </div>
 
-      <div class="section-label">Artists — Primary Offenders</div>
-      <div id="artists-list"></div>
-
-      <div class="section-label">Tracks — Evidence</div>
-      <div id="tracks-list"></div>
-
-      <div class="section-label">Genres — Root Cause</div>
-      <div id="genres-list"></div>
-
-      <div class="total-section">
-        <div class="total-row">
-          <span class="total-label">Subtotal (taste damage)</span>
-          <span class="total-val" id="subtotal"></span>
-        </div>
-        <div class="total-row">
-          <span class="total-label">Emotional surcharge</span>
-          <span class="total-val" id="surcharge"></span>
-        </div>
-        <div class="total-row big">
-          <span class="total-label">Total damage</span>
-          <span class="total-val" id="total-damage"></span>
-        </div>
+      <div class="card">
+        <div class="label">Top Song</div>
+        <div class="value" id="song">—</div>
+        <div class="tag">ruined your life</div>
       </div>
 
-      <div class="verdict">
-        <div class="verdict-stamp" id="verdict-stamp">CONFIRMED</div>
-        <div class="verdict-text" id="verdict-text"></div>
+      <div class="card">
+        <div class="label">Top Album</div>
+        <div class="value" id="album">—</div>
+        <div class="tag">ruined your life</div>
       </div>
 
-      <div class="receipt-footer">
-        <div class="barcode" id="barcode"></div>
-        <div class="footer-small">NO REFUNDS · NO RETURNS · NO RECOVERY</div>
-      </div>
     </div>
 
-    <div class="actions">
-      <a href="/" class="btn-ghost">Start over</a>
-    </div>
+    <a href="/" class="btn">Run it back</a>
   </div>
 
 </div>
 
 <script>
-  const verdicts = [
-    {
-      max: 30,
-      stamp: "MILD",
-      text: "Music has inconvenienced your life at most. You probably listen to podcasts sometimes."
-    },
-    {
-      max: 55,
-      stamp: "AFFECTED",
-      text: "Music has made a dent. You have skipped plans for a concert. You have described a song as 'changing your life' and meant it a little."
-    },
-    {
-      max: 75,
-      stamp: "DAMAGED",
-      text: "Music has restructured your personality. Your taste is a carefully maintained identity. You have felt betrayed by an artist going mainstream."
-    },
-    {
-      max: 90,
-      stamp: "CRITICAL",
-      text: "Music has ruined your life in a measurable way. Relationships, sleep, finances — all affected. You know this and have no plans to stop."
-    },
-    {
-      max: 100,
-      stamp: "TERMINAL",
-      text: "There is no version of you that exists outside of music. It got there first. Everything else is downstream."
-    }
-  ];
-
-  function seedRandom(seed) {
-    let s = seed;
-    return function() {
-      s = (s * 9301 + 49297) % 233280;
-      return s / 233280;
-    };
-  }
-
-  function getParams() {
+  function getData() {
     const params = new URLSearchParams(window.location.search);
-    const raw = params.get('data');
+    const raw = params.get("data");
     if (!raw) return null;
-    try { return JSON.parse(decodeURIComponent(raw)); }
-    catch { return null; }
-  }
-
-  function animateLoad(cb) {
-    const fill = document.getElementById('load-fill');
-    let w = 0;
-    const iv = setInterval(() => {
-      w += 2;
-      fill.style.width = Math.min(w, 95) + '%';
-      if (w >= 95) {
-        clearInterval(iv);
-        setTimeout(() => {
-          fill.style.width = '100%';
-          setTimeout(cb, 300);
-        }, 400);
-      }
-    }, 30);
-  }
-
-  function render(data) {
-    const rng = seedRandom(data.name.length * 7 + data.tracks.length * 13);
-
-    // Artists
-    const artistsEl = document.getElementById('artists-list');
-    data.artists.forEach(a => {
-      const dmg = Math.floor(rng() * 40 + 60);
-      artistsEl.innerHTML += `
-        <div class="item-row">
-          <span class="item-name">${a.name}</span>
-          <span class="item-damage">${dmg}% responsible</span>
-        </div>`;
-    });
-
-    // Tracks
-    const tracksEl = document.getElementById('tracks-list');
-    data.tracks.forEach(t => {
-      const dmg = Math.floor(rng() * 50 + 50);
-      tracksEl.innerHTML += `
-        <div class="item-row">
-          <span class="item-name">${t.name}<br><span style="font-size:11px;color:#888">${t.artist}</span></span>
-          <span class="item-damage">${dmg}% to blame</span>
-        </div>`;
-    });
-
-    // Genres
-    const allGenres = data.artists.flatMap(a => a.genres).slice(0, 4);
-    const genresEl = document.getElementById('genres-list');
-    if (allGenres.length > 0) {
-      allGenres.forEach(g => {
-        genresEl.innerHTML += `
-          <div class="item-row">
-            <span class="item-name">${g}</span>
-            <span class="item-damage">a factor</span>
-          </div>`;
-      });
-    } else {
-      genresEl.innerHTML = `<div class="item-row"><span class="item-name">Undisclosed</span><span class="item-damage">suspicious</span></div>`;
+    try {
+      return JSON.parse(decodeURIComponent(raw));
+    } catch {
+      return null;
     }
-
-    // Totals
-    const subtotal = Math.floor(rng() * 20 + 70);
-    const surcharge = Math.floor(rng() * 15 + 5);
-    const total = Math.min(subtotal + surcharge, 100);
-
-    document.getElementById('subtotal').textContent = subtotal + '%';
-    document.getElementById('surcharge').textContent = '+' + surcharge + '%';
-    document.getElementById('total-damage').textContent = total + '%';
-
-    // Verdict
-    const v = verdicts.find(v => total <= v.max) || verdicts[verdicts.length - 1];
-    document.getElementById('verdict-stamp').textContent = v.stamp;
-    document.getElementById('verdict-text').textContent = v.verdict || v.text;
-
-    // Header
-    const topArtist = data.artists[0]?.name || 'Music';
-    document.getElementById('receipt-title').innerHTML = `${topArtist.toUpperCase()}<br>RUINED YOUR LIFE`;
-
-    // Date
-    document.getElementById('receipt-date').textContent =
-      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    // Barcode
-    const chars = '█▌▐░▓';
-    let bc = '';
-    for (let i = 0; i < 28; i++) bc += chars[Math.floor(rng() * chars.length)];
-    document.getElementById('barcode').textContent = bc;
   }
 
   window.onload = () => {
-    const data = getParams();
+    const data = getData();
+
     if (!data) {
-      window.location.href = '/';
+      document.getElementById("loading").textContent = "No data found.";
       return;
     }
-    animateLoad(() => {
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('receipt').style.display = 'block';
-      render(data);
-    });
+
+    const artist = data.artists?.[0]?.name || "Unknown Artist";
+    const song = data.tracks?.[0]?.name || "Unknown Song";
+    const album = data.tracks?.[0]?.album || "Unknown Album";
+
+    document.getElementById("artist").textContent = artist;
+    document.getElementById("song").textContent = song;
+    document.getElementById("album").textContent = album;
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
   };
 </script>
+
 </body>
 </html>
