@@ -4,26 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Music Ruined My Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html, body {
-    min-height: 100%;
+    height: 100%;
     background: #f9f8f5;
     color: #111;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Bebas Neue', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 48px 24px;
+    padding: 32px 24px;
   }
-
-  .container {
-    width: 100%;
-    max-width: 480px;
-  }
-
-  /* LOADING */
+  .container { width: 100%; max-width: 600px; }
   #loading {
     text-align: center;
     display: flex;
@@ -33,145 +27,57 @@
   }
   .loading-label {
     font-size: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     font-weight: 600;
     letter-spacing: 0.24em;
     text-transform: uppercase;
     color: #aaa;
-    font-variant-numeric: tabular-nums;
   }
-  .retro-bar {
-    display: flex;
-    gap: 3px;
-    align-items: center;
-  }
-  .segment {
-    width: 14px;
-    height: 28px;
-    background: #e0ddd8;
-    transition: background 0.08s;
-  }
+  .retro-bar { display: flex; gap: 3px; }
+  .segment { width: 14px; height: 28px; background: #e0ddd8; transition: background 0.08s; }
   .segment.on { background: #111; }
-
-  /* RESULT */
-  #result { display: none; }
-
-  .header {
-    margin-bottom: 40px;
-  }
-  .header-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
+  #result { display: none; width: 100%; }
+  .block { margin-bottom: 40px; }
+  .block:last-child { margin-bottom: 0; }
+  .name {
+    font-size: clamp(52px, 11vw, 96px);
+    letter-spacing: -0.01em;
+    line-height: 0.9;
     text-transform: uppercase;
-    color: #aaa;
-    margin-bottom: 6px;
+    word-break: break-word;
   }
-  .header-title {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #111;
-  }
-
-  .lines {
-    display: flex;
-    flex-direction: column;
-    border-top: 2px solid #111;
-  }
-
-  .line {
-    padding: 22px 0;
-    border-bottom: 1px solid #e0ddd8;
-  }
-
-  .line-type {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: #bbb;
-    margin-bottom: 6px;
-  }
-
-  .line-main {
-    font-size: clamp(26px, 6vw, 40px);
-    font-weight: 800;
-    letter-spacing: -0.03em;
+  .tag {
+    font-size: clamp(28px, 6vw, 52px);
+    letter-spacing: 0.02em;
     line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .line-sub {
-    font-size: 12px;
-    color: #aaa;
-    letter-spacing: 0.04em;
-  }
-
-  .bottom {
-    margin-top: 28px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .bottom a {
-    font-size: 10px;
-    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #bbb;
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .bottom a:hover { color: #111; }
-  .bottom-date {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: #ccc;
   }
 </style>
 </head>
 <body>
 <div class="container">
-
   <div id="loading">
     <div class="loading-label" id="loading-label">Analyzing — 0%</div>
     <div class="retro-bar" id="retro-bar"></div>
   </div>
-
   <div id="result">
-    <div class="header">
-      <div class="header-label">Music Ruined My Life</div>
-      <div class="header-title" id="header-title"></div>
+    <div class="block">
+      <div class="name" id="top-artist"></div>
+      <div class="tag">ruined your life</div>
     </div>
-
-    <div class="lines">
-      <div class="line">
-        <div class="line-type">Artist</div>
-        <div class="line-main" id="top-artist"></div>
-        <div class="line-sub">ruined your life</div>
-      </div>
-      <div class="line">
-        <div class="line-type">Song</div>
-        <div class="line-main" id="top-track"></div>
-        <div class="line-sub">ruined your life</div>
-      </div>
-      <div class="line">
-        <div class="line-type">Genre</div>
-        <div class="line-main" id="top-genre"></div>
-        <div class="line-sub">ruined your life</div>
-      </div>
+    <div class="block">
+      <div class="name" id="top-track"></div>
+      <div class="tag">ruined your life</div>
     </div>
-
-    <div class="bottom">
-      <a href="/">start over</a>
-      <span class="bottom-date" id="bottom-date"></span>
+    <div class="block">
+      <div class="name" id="top-genre"></div>
+      <div class="tag">ruined your life</div>
     </div>
   </div>
-
 </div>
 <script>
   const SEGMENTS = 20;
-
   function buildBar() {
     const bar = document.getElementById('retro-bar');
     for (let i = 0; i < SEGMENTS; i++) {
@@ -181,7 +87,6 @@
       bar.appendChild(s);
     }
   }
-
   function updateBar(pct) {
     const filled = Math.floor((pct / 100) * SEGMENTS);
     for (let i = 0; i < SEGMENTS; i++) {
@@ -189,7 +94,6 @@
     }
     document.getElementById('loading-label').textContent = `Analyzing — ${Math.floor(pct)}%`;
   }
-
   function animateLoad(cb) {
     let w = 0;
     const iv = setInterval(() => {
@@ -198,14 +102,10 @@
       updateBar(w);
       if (w >= 95) {
         clearInterval(iv);
-        setTimeout(() => {
-          updateBar(100);
-          setTimeout(cb, 400);
-        }, 700);
+        setTimeout(() => { updateBar(100); setTimeout(cb, 400); }, 700);
       }
     }, 30);
   }
-
   function getParams() {
     const params = new URLSearchParams(window.location.search);
     const raw = params.get('data');
@@ -213,23 +113,16 @@
     try { return JSON.parse(decodeURIComponent(raw)); }
     catch { return null; }
   }
-
   function render(data) {
     const artist = data.artists[0]?.name || 'Music';
     const track = data.tracks[0]?.name || 'A Song';
     const genre = data.artists.flatMap(a => a.genres)[0] || 'Your Taste';
     const genreFormatted = genre.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
     document.getElementById('top-artist').textContent = artist;
     document.getElementById('top-track').textContent = track;
     document.getElementById('top-genre').textContent = genreFormatted;
-    document.getElementById('header-title').textContent = data.name || 'Anonymous';
-    document.getElementById('bottom-date').textContent =
-      new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   }
-
   buildBar();
-
   window.onload = () => {
     const data = getParams();
     if (!data) { window.location.href = '/'; return; }
@@ -242,3 +135,4 @@
 </script>
 </body>
 </html>
+ 
